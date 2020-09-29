@@ -1,0 +1,213 @@
+{
+    "activities" : [
+        {
+            "activity_name":"greet_and_intent",
+            "slots" : [
+                {"name":"caller_intent","value":""}
+            ],
+            "states": [
+                {
+                    "id":"1000",
+                    "description":"Greet the caller",
+                    "type": "prompt",
+                    "prompts": [
+                        {"condition":"always","position":"initial","text":"Thank you for calling the Owl Organisation"}
+                    ],
+                    "transitions": [
+                        { "condition":"always","targettype":"state","target":"1010"}
+                    ]
+                },
+                {
+                    "id":"1010",
+                    "description":"Capture Intent",
+                    "type": "ask",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"In a few words, please say how I can help you today." },
+                        { "condition":"always","position":"nm","sequence": 1, "text":"Sorry, I'm not sure what you asked for.  Please say how I can help you today"},
+                        { "condition":"always","position":"nm","sequence": 2, "text":"Sorry, I still didn't get that.  Please say in a few brief words what you are calling about"},
+                        { "condition":"always", "position":"ni","sequence": 1,"text":"In a few words, please say how I can help you today."},
+                        { "condition":"always", "position":"ni","sequence": 2,"text":"Please say in a few words what you are calling about today."}
+
+                    ],
+                    "grammar": "openq",
+                    "transitions": [
+                        { "condition":"Intent=Book Appointment","targettype":"activity","target":"booking"},
+                        { "condition":"Intent=Goodbye","targettype":"activity","target":"goodbye"},
+                        { "condition":"default","targettype":"activity","target":"dialogue_error"}
+
+                    ]
+                }
+
+            ]
+        },
+        {
+            "activity_name":"goodbye",
+            "slots": [],
+            "states": [
+                {
+                    "id":"9000",
+                    "description":"Say goodbye and end the call",
+                    "type": "prompt",
+                    "prompts": [
+                        {"condition":"always","position":"initial","text":"Thank you for calling, goodbye"}
+                    ],
+                    "transitions": [
+                        { "condition":"always","targettype":"state","target":"9010"}                  
+                    ]
+                },
+                {
+                    "id":"9010",
+                    "description":"Terminate the IVR call",
+                    "type": "hangup"
+                }
+
+            ]
+        },
+        {
+            "activity_name":"dialogue_error",
+            "slots": [],
+            "states": [
+                {
+                    "id":"9020",
+                    "description":"'Transfer' to agent on error by dropping out the IVR'",
+                    "type": "prompt",
+                    "prompts": [
+                        {"condition":"always","position":"initial","text":"Please hold while I put you through to someone who can help"}
+                    ],
+                    "transitions": [
+                        { "condition":"always","targettype":"state","target":"9030"}                  
+                    ]
+                },
+                {
+                    "id":"9030",
+                    "description":"Terminate the IVR call",
+                    "type": "hangup"
+                }
+
+            ]
+        },
+        {
+            "activity_name":"booking",
+            "slots" : [
+                {"name":"appt_date","value":"2020-10-12"},
+                {"name":"appt_time","value":"10:00:00"},
+                {"name":"appt_with","value":"Service Department"}
+            ],
+            "states": [
+                {
+                    "id":"2000",
+                    "description":"Select first step",
+                    "type": "decision",
+                    "transitions": [
+                        { "condition":"No Slots Filled","targettype":"state","target":"2010"},
+                        { "condition":"All Slots Filled","targettype":"state","target":"2080"},
+                        { "condition":"Got just a date","targettype":"state","target":"2020"},
+                        { "condition":"Got just a time","targettype":"state","target":"2010"},
+                        { "condition":"Got just a with","targettype":"state","target":"2010"},
+                        { "condition":"Got time and date","targettype":"state","target":"2030"},
+                        { "condition":"Got just date and with","targettype":"state","target":"2010"},
+                        { "condition":"Got just a time and with","targettype":"state","target":"2010"}
+                    ]
+                },
+                {
+                    "id":"2010",
+                    "description":"Capture date for appointment",
+                    "type": "ask",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"Please tell me the date that you would like to book an appointment for" },
+                        { "condition":"always","position":"nm","sequence": 1, "text":"Sorry, Please tell me the date that you would like to book an appointment for"},
+                        { "condition":"always","position":"nm","sequence": 2, "text":"Sorry, I still didn't get that.  Please tell me the date that you would like to book an appointment for"},
+                        { "condition":"always", "position":"ni","sequence": 1,"text":"Please tell me the date that you would like to book an appointment for."},
+                        { "condition":"always", "position":"ni","sequence": 2,"text":"Please tell me the date that you would like to book an appointment for"}
+
+                    ],
+                    "grammar": "date",
+                    "transitions": [
+                        { "condition":"Got a date, need time","targettype":"state","target":"2020"},
+                        { "condition":"Got a date, need with","targettype":"state","target":"2020"},
+                        { "condition":"All Slots Filled","targettype":"state","target":"2080"},
+                        { "condition":"Dialogue Error","targettype":"activity","target":"dialogue_error"}
+
+                    ]
+                },
+                {
+                    "id":"2020",
+                    "description":"Capture time for appointment",
+                    "type": "ask",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"What time would you like to make the appointment for?" },
+                        { "condition":"always","position":"nm","sequence": 1, "text":"Sorry, What time would you like to make the appointment for"},
+                        { "condition":"always","position":"nm","sequence": 2, "text":"Sorry, I still didn't get that.  What time would you like to make the appointment for"},
+                        { "condition":"always", "position":"ni","sequence": 1,"text":"What time would you like to make the appointment for"},
+                        { "condition":"always", "position":"ni","sequence": 2,"text":"What time would you like to make the appointment for"}
+
+                    ],
+                    "grammar": "time",
+                    "transitions": [
+                        { "condition":"Got a time, need with","targettype":"state","target":"2030"},
+                        { "condition":"Got a time, need date","targettype":"state","target":"2010"},
+                        { "condition":"All Slots Filled","targettype":"state","target":"2080"},
+                        { "condition":"Dialogue Error","targettype":"activity","target":"dialogue_error"}
+
+                    ]
+                },
+                {
+                    "id":"2030",
+                    "description":"Capture who the appointment is with",
+                    "type": "ask",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"Which department would you like an appointment with?" },
+                        { "condition":"always","position":"nm","sequence": 1, "text":"Sorry, Which department would you like an appointment with?"},
+                        { "condition":"always","position":"nm","sequence": 2, "text":"Sorry, I still didn't get that.  Which department would you like an appointment with?"},
+                        { "condition":"always", "position":"ni","sequence": 1,"text":"Which department would you like an appointment with?"},
+                        { "condition":"always", "position":"ni","sequence": 2,"text":"Which department would you like an appointment with?"}
+
+                    ],
+                    "grammar": "department",
+                    "transitions": [
+                        { "condition":"Got a with, need date","targettype":"state","target":"2010"},
+                        { "condition":"Got a with, need time","targettype":"state","target":"2020"},
+                        { "condition":"All Slots Filled","targettype":"state","target":"2080"},
+                        { "condition":"Dialogue Error","targettype":"activity","target":"dialogue_error"}
+
+                    ]
+                },
+                {
+                    "id":"2080",
+                    "description":"Ask Caller to Confirm Booking",
+                    "type": "ask",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"Just to confirm, that's a booking on [slot.appt_date] at [slot.appt_time] with [slot.appt_with], is that right?" },
+                        { "condition":"always","position":"nm","sequence": 1, "text":"Sorry, I'm not sure what you asked for.  Please say how I can help you today"},
+                        { "condition":"always","position":"nm","sequence": 2, "text":"Sorry, I still didn't get that.  Please say in a few brief words what you are calling about"},
+                        { "condition":"always", "position":"ni","sequence": 1,"text":"In a few words, please say how I can help you today."},
+                        { "condition":"always", "position":"ni","sequence": 2,"text":"Please say in a few words what you are calling about today."}
+
+                    ],
+                    "grammar": "openq",
+                    "transitions": [
+                        { "condition":"Confirmed","targettype":"state","target":"2090"},
+                        { "condition":"Not Confirmed","targettype":"activity","target":"goodbye"},
+                        { "condition":"Dialogue Error","targettype":"activity","target":"dialogue_error"}
+
+                    ]
+                },
+                {
+                    "id":"2090",
+                    "description":"Play booking confirmation",
+                    "type": "prompt",
+                    "prompts": [
+                        { "condition":"always", "position":"initial","text":"Thanks, that's booked for [slot.appt_time] on [slot.appt_date]" }
+
+                    ],
+                    "grammar": "openq",
+                    "transitions": [
+                        { "condition":"Always","targettype":"activity","target":"goodbye"}
+
+                    ]
+                }
+                
+            ]
+        }
+    ]
+}
