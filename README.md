@@ -1,50 +1,20 @@
-# Your custom Twilio Flex Plugin
+# IVR Usability Test Tool Example from SIGNAL 2020
 
-Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
+This repository contains the sample code from the SIGNAL 2020 session *Usability Testing for your Conversational IVR*.  Please note that this isn't a complete product, the code is provided as an example of how such tools *could* be built by customising Twilio Flex.
 
-## Setup
+To implement the tool, the following components are used:
 
-Make sure you have [Node.js](https://nodejs.org) as well as [`npm`](https://npmjs.com) installed.
+1. A Flex Plugin to provide the researcher User Interface that controls the call
+2. A basic Node/Express server application acting as the intermerdiary between Researcher and Caller
+3. A Twilio Function to allow the Plugin to add the IVR call leg
+![Architecture diagram](./docs/architecture_1.png)
 
-Afterwards, install the dependencies by running `npm install`:
+___
 
-```bash
-cd 
+# Setup Instructions
+> Instructions for setting up to run the code will be added here.
 
-# If you use npm
-npm install
-```
+# Call Flow definition format
+The call flow that is executed is defined in the file `flowdef.json` which specifies the prompts to be used and transitions that are available. 
 
-## Development
-
-In order to develop locally, you can use the Webpack Dev Server by running:
-
-```bash
-npm start
-```
-
-This will automatically start up the Webpack Dev Server and open the browser for you. Your app will run on `http://localhost:3000`. If you want to change that you can do this by setting the `PORT` environment variable:
-
-```bash
-PORT=3001 npm start
-```
-
-When you make changes to your code, the browser window will be automatically refreshed.
-
-## Deploy
-
-When you are ready to deploy your plugin, in your terminal run:
-
-```bash
-npm run deploy
-```
-
-This will publish your plugin as a Private Asset that is accessible by the Functions & Assets API. If you want to deploy your plugin as a Public Asset, you may pass --public to your deploy command:
-
-```bash
-npm run deploy --public
-```
-
-For more details on deploying your plugin, refer to the [deploying your plugin guide](https://www.twilio.com/docs/flex/plugins#deploying-your-plugin).
-
-Note: Common packages like `React`, `ReactDOM`, `Redux` and `ReactRedux` are not bundled with the build because they are treated as external dependencies so the plugin will depend on Flex to provide them globally.
+> Full details of the format of this file will be added here.
